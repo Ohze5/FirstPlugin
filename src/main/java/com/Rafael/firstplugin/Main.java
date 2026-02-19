@@ -1,5 +1,6 @@
 package com.Rafael.firstplugin;
 
+import org.bukkit.command.TabCompleter;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -7,17 +8,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jspecify.annotations.NonNull;
 
-import java.util.HashMap;
-import java.util.UUID;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class Main extends JavaPlugin {
+public class Main extends JavaPlugin implements TabCompleter {
 
     private final Map<UUID, Map<String, Location>> playerHomes = new HashMap<>();
 
     @Override
     public void onEnable() {
         getLogger().info("Plugin enabled !");
+        Objects.requireNonNull(this.getCommand("home")).setTabCompleter(this);
     }
 
     @Override
@@ -90,5 +91,26 @@ public class Main extends JavaPlugin {
         }
 
         return false;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String [] args) {
+        if (!(sender instanceof Player player)) return List.of();
+
+        if (command.getName().equalsIgnoreCase("home")) {
+            UUID playerID = player.getUniqueId();
+            Map<String, Location> homes = playerHomes.get(playerID);
+
+            if (homes == null) return List.of();
+
+            if (args.length == 1) {
+                String typed = args[0].toLowerCase();
+
+                return homes.keySet().stream()
+                        .filter(name -> name.toLowerCase().startsWith(typed))
+                        .collect(Collectors.toList());
+            }
+        }
+        return List.of();
     }
 }
