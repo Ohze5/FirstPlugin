@@ -13,14 +13,16 @@ import java.util.stream.Collectors;
 
 public class Main extends JavaPlugin implements TabCompleter {
 
-    private final Map<UUID, Map<String, Location>> playerHomes = new HashMap<>();
+    private HomeManager homeManager;
 
     @Override
     public void onEnable() {
         getLogger().info("Plugin enabled !");
 
-        this.getCommand("sethome").setExecutor(new SetHomeCommand(playerHomes));
-        this.getCommand("home").setExecutor(new HomeCommand(playerHomes));
+        homeManager = new HomeManager(this);
+
+        this.getCommand("sethome").setExecutor(new SetHomeCommand(homeManager));
+        this.getCommand("home").setExecutor(new HomeCommand(homeManager));
 
         Objects.requireNonNull(this.getCommand("home")).setTabCompleter(this);
 
@@ -28,57 +30,8 @@ public class Main extends JavaPlugin implements TabCompleter {
 
     @Override
     public void onDisable() {
+        homeManager.saveHomes();
         getLogger().info("Plugin disabled !");
-    }
-
-    @Override
-    public boolean onCommand(@NonNull CommandSender sender, @NonNull Command command, @NonNull String label, String @NonNull [] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("Only players can use this command !");
-            return true;
-        }
-
-
-        if (command.getName().equalsIgnoreCase("home")) {
-            UUID playerID = player.getUniqueId();
-            Map<String, Location> homes = playerHomes.get(playerID);
-
-            if (homes == null) {
-                player.sendMessage("You don't have any homes");
-                return true;
-            }
-
-            if (homes.isEmpty()) {
-                player.sendMessage("You don't have any homes");
-                return true;
-            }
-
-            Location loc;
-
-            if (args.length == 0) {
-                if (homes.size() == 1) {
-                    loc = homes.values().iterator().next();
-                } else {
-                    player.sendMessage("You have multiple homes. Use /home <name> to teleport.");
-                    return true;
-                }
-            } else {
-                String homeName = args[0];
-                loc = homes.get(homeName);
-
-                if (loc == null) {
-                    player.sendMessage("No home found with that name");
-                    return true;
-                }
-            }
-
-            player.teleport(loc);
-            player.sendMessage("You have been teleported");
-            return true;
-
-        }
-
-        return false;
     }
 
     @Override
@@ -87,7 +40,7 @@ public class Main extends JavaPlugin implements TabCompleter {
 
         if (command.getName().equalsIgnoreCase("home")) {
             UUID playerID = player.getUniqueId();
-            Map<String, Location> homes = playerHomes.get(playerID);
+            Map<String, Location> homes = homeManager.getOrCreatePlayerHomes(player.getUniqueId());
 
             if (homes == null) return List.of();
 

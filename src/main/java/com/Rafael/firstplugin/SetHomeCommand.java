@@ -13,10 +13,10 @@ import java.util.UUID;
 
 public class SetHomeCommand implements CommandExecutor {
 
-    private final Map<UUID, Map<String, Location>> playerHomes;
+    private final HomeManager homeManager;
 
-    public SetHomeCommand(Map<UUID, Map<String, Location>> playerHomes) {
-        this.playerHomes = playerHomes;
+    public SetHomeCommand(HomeManager homeManager) {
+        this.homeManager = homeManager;
     }
 
     @Override
@@ -35,8 +35,9 @@ public class SetHomeCommand implements CommandExecutor {
         Location loc = player.getLocation();
 
         UUID playerID = player.getUniqueId();
-        Map<String, Location> homes = playerHomes.computeIfAbsent(playerID, k -> new HashMap<>());
+        Map<String, Location> homes = homeManager.getOrCreatePlayerHomes(playerID);
         homes.put(homeName, loc);
+        homeManager.saveHomes();
         player.sendMessage("Home '" + homeName + "' has been set");
 
         return true;

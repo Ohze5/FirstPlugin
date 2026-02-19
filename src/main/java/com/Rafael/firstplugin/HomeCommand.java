@@ -12,10 +12,10 @@ import java.util.UUID;
 
 public class HomeCommand implements CommandExecutor {
 
-    private final Map<UUID, Map<String, Location>> playerHomes;
+    private final HomeManager homeManager;
 
-    public HomeCommand(Map<UUID, Map<String, Location>> playerHomes) {
-        this.playerHomes = playerHomes;
+    public HomeCommand(HomeManager homeManager) {
+        this.homeManager = homeManager;
     }
 
     @Override
@@ -26,7 +26,8 @@ public class HomeCommand implements CommandExecutor {
         }
 
         UUID playerID = player.getUniqueId();
-        Map<String, Location> homes = playerHomes.get(playerID);
+        Map<String, Location> homes = homeManager.getPlayerHomes(playerID);
+
 
         if (homes == null || homes.isEmpty()) {
             player.sendMessage("You don't have any homes!");
@@ -44,7 +45,7 @@ public class HomeCommand implements CommandExecutor {
             }
         } else {
             String homeName = args[0];
-            loc = homes.get(homeName);
+            loc = homeManager.getHome(playerID, homeName);
 
             if (loc == null) {
                 player.sendMessage("No home found with that name!");
