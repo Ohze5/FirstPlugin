@@ -41,7 +41,10 @@ public class Main extends JavaPlugin {
             String homeName = args[0];
             Location loc = player.getLocation();
 
-            player.sendMessage("You have set your home " + homeName + " at your current location");
+            UUID playerID = player.getUniqueId();
+            Map<String, Location> homes = playerHomes.computeIfAbsent(playerID, k -> new HashMap<>());
+            homes.put(homeName, loc);
+            player.sendMessage("Home '" + homeName + "' has been set");
 
             return true;
 
