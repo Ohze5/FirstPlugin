@@ -18,7 +18,12 @@ public class Main extends JavaPlugin implements TabCompleter {
     @Override
     public void onEnable() {
         getLogger().info("Plugin enabled !");
+
+        this.getCommand("sethome").setExecutor(new SetHomeCommand(playerHomes));
+        this.getCommand("home").setExecutor(new HomeCommand(playerHomes));
+
         Objects.requireNonNull(this.getCommand("home")).setTabCompleter(this);
+
     }
 
     @Override
@@ -33,23 +38,6 @@ public class Main extends JavaPlugin implements TabCompleter {
             return true;
         }
 
-        if (command.getName().equalsIgnoreCase("sethome")) {
-            if (args.length == 0) {
-                player.sendMessage("You must provide a name for your home !");
-                return true;
-            }
-
-            String homeName = args[0];
-            Location loc = player.getLocation();
-
-            UUID playerID = player.getUniqueId();
-            Map<String, Location> homes = playerHomes.computeIfAbsent(playerID, k -> new HashMap<>());
-            homes.put(homeName, loc);
-            player.sendMessage("Home '" + homeName + "' has been set");
-
-            return true;
-
-        }
 
         if (command.getName().equalsIgnoreCase("home")) {
             UUID playerID = player.getUniqueId();
