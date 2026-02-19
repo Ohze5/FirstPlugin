@@ -50,6 +50,43 @@ public class Main extends JavaPlugin {
 
         }
 
+        if (command.getName().equalsIgnoreCase("home")) {
+            UUID playerID = player.getUniqueId();
+            Map<String, Location> homes = playerHomes.get(playerID);
+
+            if (homes == null) {
+                player.sendMessage("You don't have any homes");
+                return true;
+            }
+
+            if (homes.isEmpty()) {
+                player.sendMessage("You don't have any homes");
+                return true;
+            }
+
+            Location loc;
+
+            if (args.length == 0) {
+                if (homes.size() == 1) {
+                    loc = homes.values().iterator().next();
+                } else {
+                    player.sendMessage("You have multiple homes. Use /home <name> to teleport.");
+                    return true;
+                }
+            } else {
+                String homeName = args[0];
+                loc = homes.get(homeName);
+
+                if (loc == null) {
+                    player.sendMessage("No home found with that name");
+                    return true;
+                }
+            }
+
+            player.teleport(loc);
+            return true;
+        }
+
         return false;
     }
 }
