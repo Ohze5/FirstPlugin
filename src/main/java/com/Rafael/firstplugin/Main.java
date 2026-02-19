@@ -84,7 +84,9 @@ public class Main extends JavaPlugin {
             }
 
             player.teleport(loc);
+            player.sendMessage("You have been teleported");
             return true;
+
         }
 
         return false;
