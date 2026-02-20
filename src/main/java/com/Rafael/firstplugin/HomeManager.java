@@ -111,8 +111,9 @@ public class HomeManager {
     public boolean deleteHome(UUID playerId, String homeName) {
         Map<String, Location> homes = playerHomes.get(playerId);
         if (homes == null) return false;
-
-        Location removed = homes.remove(homeName);
-        return removed != null;
+        if (!(homes.containsKey(homeName))) return false;
+        homes.remove(homeName);
+        if (homes.isEmpty()) playerHomes.remove(playerId);
+        return true;
     }
 }
