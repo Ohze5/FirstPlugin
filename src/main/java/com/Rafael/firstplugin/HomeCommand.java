@@ -26,7 +26,7 @@ public class HomeCommand implements CommandExecutor {
         }
 
         UUID playerID = player.getUniqueId();
-        Map<String, Location> homes = homeManager.getPlayerHomes(playerID);
+        Map<String, Location> homes = homeManager.getOrCreatePlayerHomes(playerID);
 
 
         if (homes == null || homes.isEmpty()) {
