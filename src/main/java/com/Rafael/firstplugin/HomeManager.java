@@ -52,6 +52,10 @@ public class HomeManager {
 
     }
 
+    public Map<String, Location> getPlayerHomes(UUID playerId) {
+        return playerHomes.get(playerId);
+    }
+
     private void loadHomes() {
         for (String playerId : homesConfig.getKeys(false)) {
             UUID uuid = UUID.fromString(playerId);
@@ -102,5 +106,13 @@ public class HomeManager {
         Map<String, Location> homes = playerHomes.get(playerId);
         if (homes == null) return null;
         return homes.get(homeName);
+    }
+
+    public boolean deleteHome(UUID playerId, String homeName) {
+        Map<String, Location> homes = playerHomes.get(playerId);
+        if (homes == null) return false;
+
+        Location removed = homes.remove(homeName);
+        return removed != null;
     }
 }

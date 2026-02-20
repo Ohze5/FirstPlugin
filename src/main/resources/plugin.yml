@@ -2,8 +2,13 @@ name: FirstProject
 version: 1.0
 main: com.Rafael.firstplugin.Main
 api-version: 1.21
+
 commands:
   sethome:
     description: Set a home at your current location
+
   home:
     description: Teleport to a previously set home
+
+  delhome:
+    description: Delete one of your homes
